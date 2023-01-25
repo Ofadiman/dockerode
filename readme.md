@@ -37,3 +37,6 @@ wymaga specjalnego podejścia.
 # Źródła
 
 - [Choosing the best Node.js Docker image.](https://snyk.io/blog/choosing-the-best-node-js-docker-image/)
+- [Docker for Node.js developers: 5 things you need to know not to fail your security.](https://snyk.io/blog/docker-for-node-js-developers-5-things-you-need-to-know/)
+- [10 best practices to containerize Node.js web applications with Docker.](https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/)
+- [Alpine, Slim, Stretch, Buster, Jessie, Bullseye — What are the Differences in Docker Images?](https://medium.com/swlh/alpine-slim-stretch-buster-jessie-bullseye-bookworm-what-are-the-differences-in-docker-62171ed4531d)
