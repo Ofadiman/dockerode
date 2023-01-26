@@ -5,7 +5,13 @@ FROM node:18.13.0-bullseye-slim@sha256:bc946484118735406562f17c57ddf5fded436e175
 RUN npm install -g pnpm
 
 # Instaluje zależności niezbędne w czasie developmentu.
-RUN apt-get update && apt-get install -y zsh curl neovim git
+RUN apt-get update && apt-get install -y \
+    curl \
+    dumb-init \
+    git \
+    neovim \
+    zsh \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -14,17 +20,17 @@ RUN chsh -s $(which zsh)
 
 FROM development as builder
 
-# Instaluje program działający jako init system stworzony do tego, żeby działać z PID=1.
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
-
-# Najpierw kopiuje pliki konfiguracyjne, bo teoretycznie one rzadziej się zmieniają, niż kod źródłowy.
-# W przypadku częstego budowania obrazu lokalnie w celach testowych będzie się to działo szybciej.
-COPY package.json pnpm-lock.yaml esbuild.mjs tsconfig.json tsconfig.build.json /home/node/
+# Kopiuje jedynie pliki potrzebne do zainstalowania zależności, bo one zmieniają się rzadziej, niż kod źródłowy.
+# W sytuacji, w której lokalnie buduje obraz wiele razy w celach testowych zmieniając kod źródłowy, będę mógł
+# oszczędzić czas na instalowaniu zależności.
+COPY package.json pnpm-lock.yaml /home/node/
 
 # Instalacja zależności niezbędnych do zbudowania projektu.
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
+# Kopiuje kod źródłowy aplikacji i pozostałe pliki konfiguracyjne.
 COPY ./src/ /home/node/src/
+COPY esbuild.mjs tsconfig.json tsconfig.build.json /home/node/
 
 RUN pnpm build
 
