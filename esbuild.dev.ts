@@ -1,9 +1,9 @@
 import { buildSync } from "esbuild";
 
 buildSync({
+  bundle: false,
   entryPoints: ["src/main.ts"],
-  bundle: true,
   format: "cjs",
-  platform: "node",
   outfile: "dist/main.cjs",
+  platform: "node",
 });

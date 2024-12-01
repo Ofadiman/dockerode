@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build:prod": "tsx esbuild.prod.ts",
+    "build:dev": "tsx esbuild.dev.ts"
   },
   "license": "MIT",
   "dependencies": {

@@ -1,5 +1,5 @@
 {
   "watch": ["src"],
   "ext": "ts",
-  "exec": "npx tsx esbuild.config.ts && node dist/main.cjs"
+  "exec": "npm run build:dev && node dist/main.cjs"
 }
