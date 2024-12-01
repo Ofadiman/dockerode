@@ -1,0 +1,11 @@
+# Ignore everything by default.
+*
+
+# Include the following files and directories.
+!esbuild.config.ts
+!nodemon.json
+!package-lock.json
+!package.json
+!tsconfig.json
+
+!src/

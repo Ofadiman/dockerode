@@ -10,4 +10,4 @@ fastify.get("/health", async function health() {
   return { status: "ok" };
 });
 
-await fastify.listen({ port: 3000 });
+fastify.listen({ port: 3000, host: "0.0.0.0" });
