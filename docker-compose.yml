@@ -1,5 +1,6 @@
 services:
-  api:
+  # Service created to run the application in development mode. It must be started with the command "docker compose up --watch".
+  api_dev:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,3 +14,12 @@ services:
           target: /home/node/dockerode
         - action: rebuild
           path: package-lock.json
+
+  # Service created to run the application in production mode.
+  api_prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - 3001:3000
