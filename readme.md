@@ -1,54 +1,35 @@
-# Obraz bazowy
+## Base image
 
-Wybór odpowiedniego obrazu bazowego jest ważny z następujących powodów:
+Choosing the right base image is important for the following reasons:
 
-- W czasie developmentu chce mieć łatwy dostęp do popularnych programów (np. `curl`, `git`, `apt-get`, `bash`).
-- W czasie uruchamiania kontenera na produkcji chce, żeby obraz zawierał jak najmniej zbędnych zależności, bo każdy
-  zbędny program to potencjalne ryzyko związane z bezpieczeństwem.
-- W czasie wypychania obrazu do docker registry chce, żeby obraz ważył jak najmniej, żeby zmniejszyć zużycie
-  przepustowości łącza.
-- W czasie przechowywania obrazu w docker registry chce, żeby obraz ważył jak najmniej, żeby zmniejszyć zużycie miejsca
-  na dysku.
+- During development, you want to have easy access to common tools (e.g. `curl`, `git`, `apt-get`, `bash`).
+- When running the container in production, you want the image to have as few unnecessary dependencies as possible because any unnecessary program is a potential security risk.
+- When pulling the image from the docker registry (e.g. via kubernetes, or docker cli), you want the image to be as small as possible to reduce bandwidth usage and speed up the download process.
+- When pushing the image to the docker registry, you want the image to be as small as possible to reduce bandwidth usage.
+- When storing the image in the docker Registry, you want the image to be as small as possible to reduce the amount of disk space it takes up.
 
-# Alpine
+## Bookworm, bullseye, etc.
 
-Obrazy bazowe `alpine` mają najmniej zależności, więc są najlżejsze oraz mają najmniej problemów z bezpieczeństwem. Nie
-są to oficjalnie wspierane obrazy, więc czasami mogą być z
-nimi [problemy](https://snyk.io/blog/choosing-the-best-node-js-docker-image/).
+Names such as `bookworm`, `bullseye`, etc. refer to the version of `debian` operating system. The current LTS version is called `bookworm`, and that's the only version that should be used. These images also have their `*-slim` versions, which have fewer dependencies, and should be prefered for local and production setups.
 
-# Buster, bullseye, stretch
+## Alpine
 
-Obrazy bazowe takie jak `buster`, `bullseye`, czy `stretch` odnoszą się do wersji systemu operacyjnego `debian`.
-Aktualnie wersją LTS jest wersja `bullseye`, więc tylko z niej powinienem korzystać. Inne wersje to wersje poprzednie i
-nie powinienem z nich korzystać. Obrazy te mają również swoje wersje `*-slim`, które mają mniej zależności.
+The `alpine` images are designed to be even smaller than `*-slim` images. They contain less dependencies and have less security issues. They are not officially supported, so sometimes you may encounter [problems](https://snyk.io/blog/choosing-the-best-node-js-docker-image/). It is easier to use so-called `*-slim` versions of images instead of `alpine` images.
 
-Domyślnie chciałbym korzystać z obrazu `bullseye-slim`, ponieważ:
+## Distroless
 
-- Jest to obraz oficjalnie wspierany przez docker Node.js team.
-- Nie wykorzystuje większości programów z obrazu pełnego. Brakujące programy mogę łatwo zainstalować.
+Google maintains so-called `distroless` images. These images are build to contain the bare minimum of dependencies required to run an application in a particular language. For example, they don't have shells (e.g. `zsh`, `bash`, `sh`). This approach reduces image size to the absolute minimum and reduces security risks even further than `alpine` images, but the lack of typical tools available in the Linux environment makes them difficult to work with.
 
-# Obrazy distroless
+## dumb-init
 
-Google ma projekt obrazów `distroless`, które zawierają absolutne minimum wymagane do uruchomienia aplikacji.
-Przykładowo, nie ma w nich menedżera pakietów, czy shell. Dzięki temu ich rozmiar oraz podatności związane z
-bezpieczeństwem są jeszcze mniejsze, niż w przypadku obrazów typu alpine, ale praca z nimi jest trudniejsza, ponieważ
-wymaga specjalnego podejścia.
+`dumb-init` is a program that was designed to be run as an `init process`. The `init process` is a process that is started with `PID=1` and is treated in a special way by the Linux kernel.
 
-# dumb-init
+Node.js was not designed to be run with `PID=1`, so some system signals will not be correctly handled. [Here](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals) is a detailed explanation of the problem. The solution to the problem is to implement the so-called `init system`, i.e. by running a program specifically designed to have `PID=1` first.
 
-`dumb-init` to program, który został stworzony z myślą o tym, żeby uruchamiać go jako `init process`. `Init process` to
-proces, który jest uruchamiany z `PID=1` i jest traktowany w specjalny sposób przez linux kernel.
+## Resources
 
-Node.js nie został zaprojektowany z myślą o byciu uruchomionym z `PID=1`, więc niektóre sygnały systemowe nie będę
-poprawnie
-obsługiwane. [Tutaj](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals) jest
-szczegółowe wyjaśnienie problemu. Rozwiązaniem problemu jest implementacja tzw. `init system`, czyli uruchomienie
-programu specjalnie zaprojektowanego do posiadania `PID=1`.
-
-# Źródła
-
-- [Choosing the best Node.js Docker image.](https://snyk.io/blog/choosing-the-best-node-js-docker-image/)
-- [Docker for Node.js developers: 5 things you need to know not to fail your security.](https://snyk.io/blog/docker-for-node-js-developers-5-things-you-need-to-know/)
 - [10 best practices to containerize Node.js web applications with Docker.](https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/)
 - [Alpine, Slim, Stretch, Buster, Jessie, Bullseye — What are the Differences in Docker Images?](https://medium.com/swlh/alpine-slim-stretch-buster-jessie-bullseye-bookworm-what-are-the-differences-in-docker-62171ed4531d)
+- [Choosing the best Node.js Docker image.](https://snyk.io/blog/choosing-the-best-node-js-docker-image/)
 - [Docker and Node.js Best Practices.](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md)
+- [Docker for Node.js developers: 5 things you need to know not to fail your security.](https://snyk.io/blog/docker-for-node-js-developers-5-things-you-need-to-know/)
